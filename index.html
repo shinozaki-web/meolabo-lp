@@ -148,10 +148,11 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdr
 
 /* WHY */
 .why{background:var(--gray-light);}
-.why-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px;}
-.why-card{background:white;border:1px solid var(--border);border-radius:14px;padding:24px 20px;}
-.why-quote{font-size:13px;color:var(--gray);line-height:1.7;font-style:italic;border-left:3px solid var(--blue-mid);padding-left:12px;margin-bottom:12px;}
-.why-answer{font-size:14px;color:var(--navy);font-weight:700;line-height:1.6;}
+.why-body{font-size:15px;color:var(--gray);line-height:1.9;max-width:56ch;display:flex;flex-direction:column;gap:14px;}
+.why-voices{border-left:3px solid var(--blue-mid);padding-left:20px;display:flex;flex-direction:column;gap:8px;margin:4px 0;}
+.why-voice{font-size:15px;color:var(--navy);font-weight:700;line-height:1.6;}
+.why-voice::before{content:'"';color:var(--blue);margin-right:2px;}
+.why-voice::after{content:'"';color:var(--blue);margin-left:2px;}
 .why-summary{margin-top:40px;background:white;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:10px;padding:24px 28px;}
 .why-summary p{font-size:15px;color:var(--navy);line-height:1.9;}
 .why-summary strong{color:var(--blue);font-weight:900;}
@@ -465,24 +466,21 @@ footer a{color:#60a5fa;text-decoration:underline;}
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow">WHY IT WORKS</span>
-      <h2>集客は、投稿した日だけでなく、「動いている店」に見えることが大事です。</h2>
+      <h2>投稿が止まっていると、<br>お店の魅力も止まって見えてしまう。</h2>
     </div>
-    <div class="why-cards">
-      <div class="why-card">
-        <p class="why-quote">「最近も営業しているか確認したい」</p>
-        <p class="why-answer">投稿が止まっている店は、お客様から見ると"動いているかどうか分からない店"に映ります。</p>
+    <div class="why-body">
+      <p>GoogleマップやInstagramを見たお客様は、メニューや場所だけでなく、</p>
+      <div class="why-voices">
+        <p class="why-voice">「最近もちゃんと営業しているかな」</p>
+        <p class="why-voice">「今はどんな料理が食べられるのかな」</p>
+        <p class="why-voice">「お店の雰囲気は自分に合いそうかな」</p>
       </div>
-      <div class="why-card">
-        <p class="why-quote">「どんな料理か見てから行きたい」</p>
-        <p class="why-answer">写真や最新情報が更新されている店の方が、来店前の安心感を作りやすくなります。</p>
-      </div>
-      <div class="why-card">
-        <p class="why-quote">「口コミも最新投稿も見て決めたい」</p>
-        <p class="why-answer">GoogleマップやSNSで"動いている店"として伝わることが、来店のきっかけを増やします。</p>
-      </div>
+      <p>ということも見ています。</p>
+      <p>どれだけ美味しい料理を出していても、投稿が何週間も止まっていると、初めて見るお客様には少し不安に見えてしまうことがあります。</p>
+      <p>だからこそ、完璧な投稿をたまに出すよりも、写真1枚でもいいから、発信が続いていることが大切です。</p>
     </div>
     <div class="why-summary">
-      <p>MEOポストが担うのは、難しいマーケティングではありません。<strong>忙しい飲食店が、発信を止めないための仕組みです。</strong></p>
+      <p>MEOポストは、忙しい飲食店が投稿を止めないための仕組みです。<br><strong>文章を考える時間を減らし、料理写真からGoogleマップやInstagramに使える投稿文をすぐに作れるようにします。</strong></p>
     </div>
   </div>
 </section>
