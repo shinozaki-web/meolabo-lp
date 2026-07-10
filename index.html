@@ -1768,6 +1768,11 @@ function compressImage(file,maxW,maxMB){
 document.addEventListener('DOMContentLoaded',function(){
   var form=document.getElementById('demoForm');
   if(!form)return;
+  /* 同一ブラウザでの再申込み防止 */
+  if(localStorage.getItem('meopost_applied')){
+    document.getElementById('formBody').style.display='none';
+    document.getElementById('formSuccess').style.display='block';
+  }
   form.addEventListener('submit',function(e){
     e.preventDefault();
     if(!validateStep3())return;
@@ -1782,6 +1787,7 @@ document.addEventListener('DOMContentLoaded',function(){
       if(result.ok){
         document.getElementById('formBody').style.display='none';
         document.getElementById('formSuccess').style.display='block';
+        localStorage.setItem('meopost_applied','1');
         track('demo_form_success',{});
       }else if(result.status===409){
         btn.disabled=false;btn.textContent='この写真で無料デモを申し込む';

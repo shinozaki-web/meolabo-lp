@@ -1,11 +1,6 @@
 const Busboy = require('busboy');
-const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 const resend = new Resend(process.env.RESEND_API_KEY);
 const STAFF_EMAIL = process.env.STAFF_EMAIL || 'shinozaki@meolabo.com';
 
@@ -32,90 +27,32 @@ module.exports = async function handler(req, res) {
     return res.status(422).json({ error: 'validation', message: '必須項目が不足しています。' });
   }
 
-  // Duplicate email check
-  const { data: existing, error: checkError } = await supabase
-    .from('applications')
-    .select('id')
-    .ilike('email', email)
-    .maybeSingle();
-
-  if (checkError) {
-    console.error('DB check error:', checkError);
-    return res.status(500).json({ error: 'db_error', message: 'サーバーエラーが発生しました。' });
-  }
-
-  if (existing) {
-    return res.status(409).json({
-      error: 'duplicate',
-      message: 'このメールアドレスはすでにデモを申込済みです。',
-    });
-  }
-
-  // Upload photo to Supabase Storage
-  let photoUrl = null;
+  // Validate photo via magic bytes — reject if not a real image
+  let attachment = null;
   if (photoFile) {
-    // Validate actual file type via magic bytes — ignore client-declared MIME
     const detectedMime = detectMimeFromBuffer(photoFile.buffer);
     if (!detectedMime || !ALLOWED_MIMES.has(detectedMime)) {
       return res.status(422).json({ error: 'invalid_photo', message: '写真ファイルが無効です。JPEG・PNG・WebPを選択してください。' });
     }
     const ext = ALLOWED_MIMES.get(detectedMime);
-    const safeName = email.replace(/[@.+]/g, '_');
-    const fileName = `${Date.now()}_${safeName}${ext}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('demo-photos')
-      .upload(fileName, photoFile.buffer, {
-        contentType: detectedMime, // use validated type, not client value
-        upsert: false,
-      });
-
-    if (uploadError) {
-      console.error('Photo upload error:', uploadError);
-    } else {
-      const { data } = supabase.storage.from('demo-photos').getPublicUrl(fileName);
-      photoUrl = data.publicUrl;
-    }
+    const safeDish = (fields.dish_name || '料理写真').replace(/[/\\?%*:|"<>]/g, '_');
+    attachment = {
+      filename: `${safeDish}${ext}`,
+      content: photoFile.buffer,
+    };
   }
 
-  // Normalize concerns (checkboxes come as array or single string)
   const concerns = [].concat(fields.concerns || []).filter(Boolean);
 
-  // Save to database
-  const { error: insertError } = await supabase.from('applications').insert({
-    store_name: storeName,
-    store_type: fields.store_type || '',
-    prefecture: fields.prefecture || '',
-    dish_name: fields.dish_name || '',
-    message_hint: fields.message_hint || null,
-    concerns,
-    name,
-    email,
-    phone: fields.phone || null,
-    note: fields.note || null,
-    photo_url: photoUrl,
-    utm_source: fields.utm_source || null,
-    utm_medium: fields.utm_medium || null,
-    utm_campaign: fields.utm_campaign || null,
-    utm_content: fields.utm_content || null,
-    utm_term: fields.utm_term || null,
-    referrer: fields.referrer || null,
-    landing_page: fields.landing_page || null,
-  });
-
-  if (insertError) {
-    console.error('Insert error:', insertError);
-    return res.status(500).json({ error: 'db_error', message: 'データの保存に失敗しました。' });
-  }
-
-  // Send emails (non-fatal — application is saved even if email fails)
+  // Send emails
   try {
     await Promise.all([
       resend.emails.send({
         from: `MEOポスト申込 <noreply@meolabo.com>`,
         to: [STAFF_EMAIL],
         subject: `【デモ申込】${storeName}（${name}様）`,
-        html: buildStaffEmail({ fields, concerns, photoUrl }),
+        html: buildStaffEmail({ fields, concerns, hasPhoto: !!attachment }),
+        attachments: attachment ? [attachment] : [],
       }),
       resend.emails.send({
         from: `MEOポスト <noreply@meolabo.com>`,
@@ -126,6 +63,7 @@ module.exports = async function handler(req, res) {
     ]);
   } catch (e) {
     console.error('Email error:', e);
+    return res.status(500).json({ error: 'email_error', message: '送信に失敗しました。しばらく経ってから再度お試しください。' });
   }
 
   return res.status(200).json({ ok: true });
@@ -166,16 +104,6 @@ function parseMultipart(req) {
   });
 }
 
-function esc(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
-}
-
-// Validate actual file content via magic bytes — never trust client-declared MIME
 const ALLOWED_MIMES = new Map([
   ['image/jpeg', '.jpg'],
   ['image/png',  '.png'],
@@ -192,7 +120,16 @@ function detectMimeFromBuffer(buf) {
   return null;
 }
 
-function buildStaffEmail({ fields, concerns, photoUrl }) {
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+function buildStaffEmail({ fields, concerns, hasPhoto }) {
   const f = k => esc(Array.isArray(fields[k]) ? fields[k].join(', ') : (fields[k] || '—'));
   return `<!DOCTYPE html><html><body style="font-family:sans-serif;font-size:14px;color:#333;max-width:640px;">
 <h2 style="color:#173F35;margin-bottom:4px;">新規デモ申込</h2>
@@ -208,14 +145,9 @@ function buildStaffEmail({ fields, concerns, photoUrl }) {
   <tr><th style="background:#f5f5f5;text-align:left;">メール</th><td><a href="mailto:${f('email')}">${f('email')}</a></td></tr>
   <tr><th style="background:#f5f5f5;text-align:left;">電話</th><td>${f('phone')}</td></tr>
   <tr><th style="background:#f5f5f5;text-align:left;">質問・要望</th><td>${f('note')}</td></tr>
-  <tr><th style="background:#f5f5f5;text-align:left;">UTM / 流入</th><td>${f('utm_source') !== '—' ? f('utm_source') : f('referrer')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">流入元</th><td>${f('utm_source') !== '—' ? f('utm_source') : f('referrer')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">料理写真</th><td>${hasPhoto ? '✅ 添付あり（メール添付ファイルを確認）' : '—'}</td></tr>
 </table>
-${photoUrl
-  ? `<h3 style="margin-top:24px;color:#173F35;">料理写真</h3>
-     <a href="${esc(photoUrl)}"><img src="${esc(photoUrl)}" style="max-width:480px;border-radius:8px;display:block;border:1px solid #ddd;" alt="料理写真" /></a>
-     <p><a href="${esc(photoUrl)}">写真を大きく開く</a></p>`
-  : '<p style="color:#999;margin-top:16px;">料理写真：未添付</p>'
-}
 </body></html>`;
 }
 
