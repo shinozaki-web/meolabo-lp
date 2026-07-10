@@ -1,8 +1,15 @@
 const Busboy = require('busboy');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const STAFF_EMAIL = process.env.STAFF_EMAIL || 'shinozaki@meolabo.com';
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+const STAFF_EMAIL = process.env.STAFF_EMAIL || process.env.GMAIL_USER;
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -47,19 +54,18 @@ module.exports = async function handler(req, res) {
 
   const concerns = [].concat(fields.concerns || []).filter(Boolean);
 
-  // Send emails
   try {
     await Promise.all([
-      resend.emails.send({
-        from: `MEOポスト申込 <noreply@meolabo.com>`,
-        to: [STAFF_EMAIL],
+      transporter.sendMail({
+        from: `"MEOポスト申込" <${process.env.GMAIL_USER}>`,
+        to: STAFF_EMAIL,
         subject: `【デモ申込】${storeName}（${name}様）`,
         html: buildStaffEmail({ fields, concerns, hasPhoto: !!attachment }),
         attachments: attachment ? [attachment] : [],
       }),
-      resend.emails.send({
-        from: `MEOポスト <noreply@meolabo.com>`,
-        to: [email],
+      transporter.sendMail({
+        from: `"MEOポスト" <${process.env.GMAIL_USER}>`,
+        to: email,
         subject: '【MEOポスト】無料デモのお申込みを受け付けました',
         html: buildCustomerEmail({ name, storeName }),
       }),
@@ -92,11 +98,7 @@ function parseMultipart(req) {
       stream.on('data', d => chunks.push(d));
       stream.on('end', () => {
         if (chunks.length > 0) {
-          photoFile = {
-            buffer: Buffer.concat(chunks),
-            mimetype: info.mimeType,
-            filename: info.filename,
-          };
+          photoFile = { buffer: Buffer.concat(chunks), mimetype: info.mimeType };
         }
       });
     });
@@ -149,7 +151,7 @@ function buildStaffEmail({ fields, concerns, hasPhoto }) {
   <tr><th style="background:#f5f5f5;text-align:left;">電話</th><td>${f('phone')}</td></tr>
   <tr><th style="background:#f5f5f5;text-align:left;">質問・要望</th><td>${f('note')}</td></tr>
   <tr><th style="background:#f5f5f5;text-align:left;">流入元</th><td>${f('utm_source') !== '—' ? f('utm_source') : f('referrer')}</td></tr>
-  <tr><th style="background:#f5f5f5;text-align:left;">料理写真</th><td>${hasPhoto ? '✅ 添付あり（メール添付ファイルを確認）' : '—'}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">料理写真</th><td>${hasPhoto ? '✅ 添付あり' : '—'}</td></tr>
 </table>
 </body></html>`;
 }
