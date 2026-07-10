@@ -54,14 +54,19 @@ module.exports = async function handler(req, res) {
   // Upload photo to Supabase Storage
   let photoUrl = null;
   if (photoFile) {
-    const ext = photoFile.mimetype === 'image/png' ? '.png' : '.jpg';
+    // Validate actual file type via magic bytes — ignore client-declared MIME
+    const detectedMime = detectMimeFromBuffer(photoFile.buffer);
+    if (!detectedMime || !ALLOWED_MIMES.has(detectedMime)) {
+      return res.status(422).json({ error: 'invalid_photo', message: '写真ファイルが無効です。JPEG・PNG・WebPを選択してください。' });
+    }
+    const ext = ALLOWED_MIMES.get(detectedMime);
     const safeName = email.replace(/[@.+]/g, '_');
     const fileName = `${Date.now()}_${safeName}${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from('demo-photos')
       .upload(fileName, photoFile.buffer, {
-        contentType: photoFile.mimetype,
+        contentType: detectedMime, // use validated type, not client value
         upsert: false,
       });
 
@@ -162,7 +167,29 @@ function parseMultipart(req) {
 }
 
 function esc(str) {
-  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+// Validate actual file content via magic bytes — never trust client-declared MIME
+const ALLOWED_MIMES = new Map([
+  ['image/jpeg', '.jpg'],
+  ['image/png',  '.png'],
+  ['image/webp', '.webp'],
+]);
+
+function detectMimeFromBuffer(buf) {
+  if (!buf || buf.length < 12) return null;
+  if (buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) return 'image/jpeg';
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47 &&
+      buf[4] === 0x0D && buf[5] === 0x0A && buf[6] === 0x1A && buf[7] === 0x0A) return 'image/png';
+  if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
+      buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50) return 'image/webp';
+  return null;
 }
 
 function buildStaffEmail({ fields, concerns, photoUrl }) {
