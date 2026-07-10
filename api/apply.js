@@ -35,7 +35,10 @@ module.exports = async function handler(req, res) {
       return res.status(422).json({ error: 'invalid_photo', message: '写真ファイルが無効です。JPEG・PNG・WebPを選択してください。' });
     }
     const ext = ALLOWED_MIMES.get(detectedMime);
-    const safeDish = (fields.dish_name || '料理写真').replace(/[/\\?%*:|"<>]/g, '_');
+    const safeDish = (fields.dish_name || '料理写真')
+      .replace(/[\r\n]/g, '')
+      .replace(/[/\\?%*:|"<>]/g, '_')
+      .slice(0, 64);
     attachment = {
       filename: `${safeDish}${ext}`,
       content: photoFile.buffer,
