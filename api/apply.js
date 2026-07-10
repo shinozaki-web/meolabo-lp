@@ -1,0 +1,204 @@
+const Busboy = require('busboy');
+const { createClient } = require('@supabase/supabase-js');
+const { Resend } = require('resend');
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+const resend = new Resend(process.env.RESEND_API_KEY);
+const STAFF_EMAIL = process.env.STAFF_EMAIL || 'shinozaki@meolabo.com';
+
+module.exports = async function handler(req, res) {
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
+
+  let fields, photoFile;
+  try {
+    ({ fields, photoFile } = await parseMultipart(req));
+  } catch (e) {
+    console.error('Parse error:', e);
+    return res.status(400).json({ error: 'parse_error', message: 'データの読み込みに失敗しました。' });
+  }
+
+  // Honeypot: bots fill this, humans don't
+  if (fields._gotcha) return res.status(200).json({ ok: true });
+
+  const email = fields.email;
+  const name = fields.name;
+  const storeName = fields.store_name;
+
+  if (!email || !name || !storeName) {
+    return res.status(422).json({ error: 'validation', message: '必須項目が不足しています。' });
+  }
+
+  // Duplicate email check
+  const { data: existing, error: checkError } = await supabase
+    .from('applications')
+    .select('id')
+    .ilike('email', email)
+    .maybeSingle();
+
+  if (checkError) {
+    console.error('DB check error:', checkError);
+    return res.status(500).json({ error: 'db_error', message: 'サーバーエラーが発生しました。' });
+  }
+
+  if (existing) {
+    return res.status(409).json({
+      error: 'duplicate',
+      message: 'このメールアドレスはすでにデモを申込済みです。',
+    });
+  }
+
+  // Upload photo to Supabase Storage
+  let photoUrl = null;
+  if (photoFile) {
+    const ext = photoFile.mimetype === 'image/png' ? '.png' : '.jpg';
+    const safeName = email.replace(/[@.+]/g, '_');
+    const fileName = `${Date.now()}_${safeName}${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('demo-photos')
+      .upload(fileName, photoFile.buffer, {
+        contentType: photoFile.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Photo upload error:', uploadError);
+    } else {
+      const { data } = supabase.storage.from('demo-photos').getPublicUrl(fileName);
+      photoUrl = data.publicUrl;
+    }
+  }
+
+  // Normalize concerns (checkboxes come as array or single string)
+  const concerns = [].concat(fields.concerns || []).filter(Boolean);
+
+  // Save to database
+  const { error: insertError } = await supabase.from('applications').insert({
+    store_name: storeName,
+    store_type: fields.store_type || '',
+    prefecture: fields.prefecture || '',
+    dish_name: fields.dish_name || '',
+    message_hint: fields.message_hint || null,
+    concerns,
+    name,
+    email,
+    phone: fields.phone || null,
+    note: fields.note || null,
+    photo_url: photoUrl,
+    utm_source: fields.utm_source || null,
+    utm_medium: fields.utm_medium || null,
+    utm_campaign: fields.utm_campaign || null,
+    utm_content: fields.utm_content || null,
+    utm_term: fields.utm_term || null,
+    referrer: fields.referrer || null,
+    landing_page: fields.landing_page || null,
+  });
+
+  if (insertError) {
+    console.error('Insert error:', insertError);
+    return res.status(500).json({ error: 'db_error', message: 'データの保存に失敗しました。' });
+  }
+
+  // Send emails (non-fatal — application is saved even if email fails)
+  try {
+    await Promise.all([
+      resend.emails.send({
+        from: `MEOポスト申込 <noreply@meolabo.com>`,
+        to: [STAFF_EMAIL],
+        subject: `【デモ申込】${storeName}（${name}様）`,
+        html: buildStaffEmail({ fields, concerns, photoUrl }),
+      }),
+      resend.emails.send({
+        from: `MEOポスト <noreply@meolabo.com>`,
+        to: [email],
+        subject: '【MEOポスト】無料デモのお申込みを受け付けました',
+        html: buildCustomerEmail({ name, storeName }),
+      }),
+    ]);
+  } catch (e) {
+    console.error('Email error:', e);
+  }
+
+  return res.status(200).json({ ok: true });
+};
+
+function parseMultipart(req) {
+  return new Promise((resolve, reject) => {
+    const bb = Busboy({ headers: req.headers, limits: { fileSize: 10 * 1024 * 1024 } });
+    const fields = {};
+    let photoFile = null;
+
+    bb.on('field', (name, val) => {
+      if (name in fields) {
+        fields[name] = [].concat(fields[name], val);
+      } else {
+        fields[name] = val;
+      }
+    });
+
+    bb.on('file', (name, stream, info) => {
+      if (name !== 'food_photo') { stream.resume(); return; }
+      const chunks = [];
+      stream.on('data', d => chunks.push(d));
+      stream.on('end', () => {
+        if (chunks.length > 0) {
+          photoFile = {
+            buffer: Buffer.concat(chunks),
+            mimetype: info.mimeType,
+            filename: info.filename,
+          };
+        }
+      });
+    });
+
+    bb.on('close', () => resolve({ fields, photoFile }));
+    bb.on('error', reject);
+    req.pipe(bb);
+  });
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function buildStaffEmail({ fields, concerns, photoUrl }) {
+  const f = k => esc(Array.isArray(fields[k]) ? fields[k].join(', ') : (fields[k] || '—'));
+  return `<!DOCTYPE html><html><body style="font-family:sans-serif;font-size:14px;color:#333;max-width:640px;">
+<h2 style="color:#173F35;margin-bottom:4px;">新規デモ申込</h2>
+<p style="color:#666;margin-top:0;">${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;width:100%;border-color:#ddd;">
+  <tr><th style="background:#f5f5f5;text-align:left;white-space:nowrap;width:140px;">店舗名</th><td>${f('store_name')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">業態</th><td>${f('store_type')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">都道府県</th><td>${f('prefecture')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">料理名</th><td>${f('dish_name')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">今日伝えたいこと</th><td>${f('message_hint')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">困っていること</th><td>${concerns.length ? esc(concerns.join('、')) : '—'}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">お名前</th><td>${f('name')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">メール</th><td><a href="mailto:${f('email')}">${f('email')}</a></td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">電話</th><td>${f('phone')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">質問・要望</th><td>${f('note')}</td></tr>
+  <tr><th style="background:#f5f5f5;text-align:left;">UTM / 流入</th><td>${f('utm_source') !== '—' ? f('utm_source') : f('referrer')}</td></tr>
+</table>
+${photoUrl
+  ? `<h3 style="margin-top:24px;color:#173F35;">料理写真</h3>
+     <a href="${esc(photoUrl)}"><img src="${esc(photoUrl)}" style="max-width:480px;border-radius:8px;display:block;border:1px solid #ddd;" alt="料理写真" /></a>
+     <p><a href="${esc(photoUrl)}">写真を大きく開く</a></p>`
+  : '<p style="color:#999;margin-top:16px;">料理写真：未添付</p>'
+}
+</body></html>`;
+}
+
+function buildCustomerEmail({ name, storeName }) {
+  return `<!DOCTYPE html><html><body style="font-family:sans-serif;font-size:15px;color:#333;max-width:600px;margin:0 auto;padding:24px;">
+<p>${esc(name)} 様</p>
+<p>MEOポストへの無料デモお申込みありがとうございます。</p>
+<p>「<strong>${esc(storeName)}</strong>」の料理写真を使ったデモを準備しています。<br>
+<strong>2営業日以内</strong>に、実際に生成された投稿文サンプルをこのメールへの返信でお送りします。</p>
+<p>ご質問はこのメールへの返信でお気軽にどうぞ。</p>
+<p style="margin-top:40px;padding-top:16px;border-top:1px solid #eee;color:#888;font-size:13px;">— MEOポスト（株式会社meolabo）</p>
+</body></html>`;
+}
