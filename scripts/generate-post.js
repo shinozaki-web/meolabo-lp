@@ -1,7 +1,18 @@
 'use strict';
 const Anthropic = require('@anthropic-ai/sdk');
+const sanitizeHtml = require('sanitize-html');
 const fs = require('fs');
 const path = require('path');
+
+const SANITIZE_OPTS = {
+  allowedTags: ['p', 'ul', 'ol', 'li', 'strong', 'em', 'h3', 'br', 'a', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+  allowedAttributes: { a: ['href'] },
+  allowedSchemes: ['https', 'http'],
+};
+
+function sanitize(html) {
+  return sanitizeHtml(String(html || ''), SANITIZE_OPTS);
+}
 
 const ROOT = path.join(__dirname, '..');
 const BLOG_DIR = path.join(ROOT, 'blog');
@@ -102,10 +113,10 @@ function buildHTML(topic, article, dateStr) {
 
   const bodyHtml = article.sections.map(s => {
     if (s.type === 'lead') {
-      return `<div class="article-lead">${s.html}</div>`;
+      return `<div class="article-lead">${sanitize(s.html)}</div>`;
     }
     if (s.type === 'h2') {
-      return `<section>\n<h2>${esc(s.title)}</h2>\n${s.html}\n</section>`;
+      return `<section>\n<h2>${esc(s.title)}</h2>\n${sanitize(s.html)}\n</section>`;
     }
     if (s.type === 'faq') {
       const items = s.items.map(item => `
@@ -116,7 +127,7 @@ function buildHTML(topic, article, dateStr) {
       return `<section id="faq"><h2>よくある質問</h2>${items}</section>`;
     }
     if (s.type === 'summary') {
-      return `<section class="summary-section">${s.html}</section>`;
+      return `<section class="summary-section">${sanitize(s.html)}</section>`;
     }
     return '';
   }).join('\n\n');
