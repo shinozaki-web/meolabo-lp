@@ -168,7 +168,7 @@ header{
 }
 .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;}
 .logo-wrap{display:flex;align-items:baseline;gap:8px;}
-.logo{font-size:20px;font-weight:900;color:var(--brand);letter-spacing:-.02em;}
+.logo{font-size:20px;font-weight:900;color:var(--brand);letter-spacing:-.02em;white-space:nowrap;}
 .logo-tag{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;}
 .header-nav{display:flex;align-items:center;gap:28px;}
 .header-nav a{font-size:14px;font-weight:700;color:var(--text);padding:4px 0;border-bottom:2px solid transparent;transition:border-color .15s,color .15s;}
@@ -271,6 +271,8 @@ header{
   #hero{padding:60px 0 72px;}
   .mock-phone{width:240px;}
 }
+.sp-br{display:none;}
+@media(max-width:640px){.sp-br{display:block;}}
 
 /* ===================== DEMO SECTION ===================== */
 #demo{background:var(--surface);border-bottom:1px solid var(--border);scroll-margin-top:65px;}
@@ -515,6 +517,7 @@ header{
   .founder-inner{grid-template-columns:1fr;}
   .founder-photo-wrap{display:flex;align-items:center;gap:20px;}
   .founder-photo{width:80px;height:80px;margin:0;flex-shrink:0;}
+  .founder-info{flex:1;min-width:0;}
 }
 
 /* ===================== FAQ ===================== */
@@ -656,7 +659,7 @@ header{
           <span>飲食店オーナーが、自分の店のために作った</span>
           <span>飲食店専用AI投稿スタッフ</span>
         </div>
-        <h1 class="hero-h1">料理写真1枚から<br>飲食店のGoogleマップInstagram<br>投稿文をAIで作成</h1>
+        <h1 class="hero-h1">料理写真1枚から<br>飲食店のGoogleマップ<br class="sp-br">Instagram<br>投稿文をAIで作成</h1>
         <p class="hero-emotion">人を雇うほどではない。でも、投稿は止めたくない。</p>
         <p class="hero-desc">MEOポストは、料理写真1枚からGoogleマップとInstagramに使える投稿文を作る、飲食店専用のAIツールです。仕込みや営業で忙しくても、毎回ゼロから文章を考える必要はありません。写真を入れて、できた文章を確認・編集することで、お店の発信を続けやすくします。</p>
         <div class="hero-cta-wrap">
@@ -1288,12 +1291,14 @@ header{
         <div class="founder-photo">
           <img src="/founder.jpg" alt="篠崎友寿（門司港イタリアンBONGO オーナーシェフ）" width="160" height="160" loading="lazy">
         </div>
-        <div class="founder-name">篠崎 友寿</div>
-        <div class="founder-role">門司港イタリアン BONGO<br>オーナーシェフ<br>株式会社LAM COMPANY 代表</div>
-        <div class="founder-tags">
-          <span class="founder-tag">飲食店オーナー</span>
-          <span class="founder-tag">MEO・集客支援</span>
-          <span class="founder-tag">AI活用支援</span>
+        <div class="founder-info">
+          <div class="founder-name">篠崎 友寿</div>
+          <div class="founder-role">門司港イタリアン BONGO<br>オーナーシェフ<br>株式会社LAM COMPANY 代表</div>
+          <div class="founder-tags">
+            <span class="founder-tag">飲食店オーナー</span>
+            <span class="founder-tag">MEO・集客支援</span>
+            <span class="founder-tag">AI活用支援</span>
+          </div>
         </div>
       </div>
       <div class="founder-text">
