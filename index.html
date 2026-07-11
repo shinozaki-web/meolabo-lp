@@ -36,9 +36,19 @@ gtag('config','G-XXXXXXXXXX');
   "@context":"https://schema.org",
   "@graph":[
     {
+      "@type":"WebSite",
+      "url":"https://www.meolabo.com/",
+      "name":"MEOポスト",
+      "description":"飲食店のSNS投稿をAIで作成｜Googleマップ・Instagram対応"
+    },
+    {
       "@type":"Organization",
       "name":"株式会社LAM COMPANY",
       "url":"https://www.meolabo.com/",
+      "logo":{
+        "@type":"ImageObject",
+        "url":"https://www.meolabo.com/founder.jpg"
+      },
       "address":{
         "@type":"PostalAddress",
         "streetAddress":"栄町2-22",
@@ -50,23 +60,29 @@ gtag('config','G-XXXXXXXXXX');
     {
       "@type":"SoftwareApplication",
       "name":"MEOポスト",
+      "url":"https://www.meolabo.com/",
       "applicationCategory":"BusinessApplication",
+      "applicationSubCategory":"飲食店向けSNS投稿AIツール",
       "description":"料理写真1枚からGoogleマップ・Instagram用の投稿文をAIで作成する飲食店専用ツール。忙しい飲食店オーナーのSNS・Googleマップ発信を続けやすくします。",
+      "keywords":"飲食店 SNS 投稿 AI, 飲食店 AI 投稿 ツール, Googleマップ 投稿 AI, 飲食店 インスタ 投稿文 AI, 飲食店 投稿文 自動生成",
+      "featureList":"Googleマップ投稿文生成, Instagram投稿文生成, ハッシュタグ生成, 多言語投稿対応, ショート動画スクリプト生成, スマートフォン対応",
       "offers":[
-        {"@type":"Offer","name":"ライト","price":"2980","priceCurrency":"JPY"},
-        {"@type":"Offer","name":"スタンダード","price":"5980","priceCurrency":"JPY"},
-        {"@type":"Offer","name":"プレミアム","price":"14800","priceCurrency":"JPY"}
+        {"@type":"Offer","name":"ライト","price":"2980","priceCurrency":"JPY","priceValidUntil":"2027-12-31"},
+        {"@type":"Offer","name":"スタンダード","price":"5980","priceCurrency":"JPY","priceValidUntil":"2027-12-31"},
+        {"@type":"Offer","name":"プレミアム","price":"14800","priceCurrency":"JPY","priceValidUntil":"2027-12-31"}
       ],
       "operatingSystem":"iOS, Android, Web",
-      "provider":{"@type":"Organization","name":"株式会社LAM COMPANY"}
+      "provider":{"@type":"Organization","name":"株式会社LAM COMPANY","url":"https://www.meolabo.com/"}
     },
     {
       "@type":"FAQPage",
       "mainEntity":[
         {"@type":"Question","name":"AIに詳しくなくても使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。料理写真を選んで、料理名や一言を入力するだけで使えます。AIへの専門的な指示は不要です。スマートフォン操作ができれば始められます。"}},
         {"@type":"Question","name":"AIが勝手に投稿するのですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。MEOポストが行うのは投稿文の生成までです。生成された文章は投稿前に確認・編集できます。実際の投稿はオーナー様がご自身で行います。"}},
+        {"@type":"Question","name":"飲食店のSNS投稿が続かない場合、どう改善できますか？","acceptedAnswer":{"@type":"Answer","text":"投稿が続かない主な原因は、毎回文章を考える時間と手間です。MEOポストは料理写真1枚から投稿文を自動生成するため、「何を書くか」を考える必要がなくなります。写真を選んで内容を確認するだけなので、忙しい営業日でも投稿を続けやすくなります。"}},
+        {"@type":"Question","name":"ChatGPTとの違いは何ですか？","acceptedAnswer":{"@type":"Answer","text":"ChatGPTは毎回指示（プロンプト）を考える必要があり、GoogleマップとInstagramで別々に作り分ける手間もかかります。MEOポストは飲食店の投稿に特化しており、料理写真を選ぶだけでGoogleマップ・Instagram両方の投稿文を同時に生成します。店舗情報も登録済みのため、毎回入力し直す必要もありません。"}},
+        {"@type":"Question","name":"Googleマップへの投稿頻度はどのくらいが理想ですか？","acceptedAnswer":{"@type":"Answer","text":"明確な正解はありませんが、週に数回以上の定期投稿が発信を続けるうえで現実的な目安です。MEOポストを導入した店舗では、月2回程度だった投稿が月30回以上に増えた事例があります。ただし、投稿頻度だけでなく口コミ数・評価・競合状況なども検索順位に影響するため、投稿の継続を目的とした活用をおすすめします。"}},
         {"@type":"Question","name":"投稿すれば検索順位が上がりますか？","acceptedAnswer":{"@type":"Answer","text":"検索順位の改善を保証するものではありません。Googleマップの検索順位は投稿頻度以外にも、口コミ数・評価・競合状況など多くの要因が影響します。"}},
-        {"@type":"Question","name":"ChatGPTとの違いは何ですか？","acceptedAnswer":{"@type":"Answer","text":"ChatGPTは幅広い用途に使える汎用AIです。MEOポストは飲食店のGoogleマップ・Instagram投稿に特化しており、料理写真から始められるため、毎回AIに詳しい指示を出す必要がありません。"}},
         {"@type":"Question","name":"無料デモでは何を確認できますか？","acceptedAnswer":{"@type":"Answer","text":"実際の料理写真を使い、MEOポストでどのような投稿文が生成されるかをご案内します。あわせて現在のGoogleマップやSNSの投稿状況を確認し、どの作業を効率化できるかをお伝えします。契約や購入を前提とした申し込みではありません。"}}
       ]
     }
