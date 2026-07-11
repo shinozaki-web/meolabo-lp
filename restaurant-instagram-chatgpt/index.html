@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChatGPTで飲食店のInstagram投稿文を作る方法と限界｜MEOポスト</title>
+<meta name="description" content="ChatGPTを使って飲食店のInstagram投稿文を作る方法・プロンプト例を解説。ChatGPTの限界と飲食店特化AIツール（MEOポスト）との違いも紹介。">
+<link rel="canonical" href="https://www.meolabo.com/restaurant-instagram-chatgpt/">
+<meta property="og:title" content="ChatGPTで飲食店のInstagram投稿文を作る方法と限界｜MEOポスト">
+<meta property="og:description" content="ChatGPTで飲食店のInstagram投稿文を作る方法・プロンプト例・限界点を解説。飲食店特化AIとの比較も。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.meolabo.com/restaurant-instagram-chatgpt/">
+<meta property="og:image" content="https://www.meolabo.com/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"MEOポスト","item":"https://www.meolabo.com/"},
+        {"@type":"ListItem","position":2,"name":"ChatGPTで飲食店のInstagram投稿文を作る方法と限界"}
+      ]
+    },
+    {
+      "@type":"Article",
+      "headline":"ChatGPTで飲食店のInstagram投稿文を作る方法と限界",
+      "description":"ChatGPTを使って飲食店のInstagram投稿文を作る方法・プロンプト例・限界点を解説。",
+      "url":"https://www.meolabo.com/restaurant-instagram-chatgpt/",
+      "datePublished":"2026-07-11",
+      "dateModified":"2026-07-11",
+      "author":{"@type":"Organization","name":"株式会社LAM COMPANY"},
+      "publisher":{"@type":"Organization","name":"MEOポスト","url":"https://www.meolabo.com/"}
+    },
+    {
+      "@type":"FAQPage",
+      "mainEntity":[
+        {"@type":"Question","name":"ChatGPTで生成したInstagram投稿文はバンされますか？","acceptedAnswer":{"@type":"Answer","text":"AI生成テキスト自体はInstagramのポリシーに違反しません。ただし、スパム的なハッシュタグの大量使用や、他アカウントの投稿をコピーしたような内容はポリシー違反になる可能性があります。"}},
+        {"@type":"Question","name":"ChatGPTに毎回同じ店舗情報を入力しなくて済む方法はありますか？","acceptedAnswer":{"@type":"Answer","text":"ChatGPTのカスタム指示機能（My instructions）に店舗情報を登録しておくと、毎回入力する手間を省けます。ただし、プロンプトの設計・管理が必要で、Googleマップ用とInstagram用を切り替える手間は残ります。MEOポストでは店舗情報を一度登録するだけで両媒体の投稿文を同時生成できます。"}}
+      ]
+    }
+  ]
+}
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --brand:#173F35;--brand-dark:#0F2B24;--action:#F06B35;
+  --text:#1A1A1A;--muted:#6B7280;--bg:#FFFFFF;--bg-warm:#FFF9F1;--bg-sub:#F5F5F0;
+  --border:#E5E7EB;--radius:12px;
+}
+body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:16px;color:var(--text);line-height:1.8;background:var(--bg);}
+a{color:var(--brand);text-decoration:none;}
+a:hover{text-decoration:underline;}
+.site-header{background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.site-logo{font-size:18px;font-weight:900;color:var(--brand);text-decoration:none;}
+.site-logo:hover{text-decoration:none;}
+.header-cta{background:var(--action);color:#fff;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:700;white-space:nowrap;}
+.header-cta:hover{opacity:.9;text-decoration:none;}
+.breadcrumb{padding:12px 0;font-size:13px;color:var(--muted);}
+.breadcrumb a{color:var(--muted);}
+.breadcrumb span{margin:0 6px;}
+.container{max-width:800px;margin:0 auto;padding:0 24px;}
+.article-wrap{padding:40px 0 80px;}
+.article-header{margin-bottom:40px;}
+.article-tag{display:inline-block;background:var(--bg-warm);color:var(--brand);font-size:12px;font-weight:700;padding:4px 10px;border-radius:4px;margin-bottom:16px;}
+.article-h1{font-size:clamp(22px,3.5vw,32px);font-weight:900;line-height:1.4;color:var(--text);margin-bottom:16px;}
+.article-meta{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.article-lead{font-size:17px;line-height:1.9;background:var(--bg-warm);border-left:4px solid var(--brand);padding:20px 24px;border-radius:0 8px 8px 0;}
+.toc{background:var(--bg-sub);border-radius:var(--radius);padding:24px 28px;margin:40px 0;}
+.toc-title{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;}
+.toc li{margin-bottom:6px;font-size:15px;}
+.toc a{color:var(--brand);}
+.article-body h2{font-size:clamp(18px,2.5vw,24px);font-weight:900;color:var(--brand-dark);margin:48px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--brand);}
+.article-body h3{font-size:18px;font-weight:700;margin:32px 0 12px;}
+.article-body p{margin-bottom:20px;}
+.article-body ul,.article-body ol{padding-left:24px;margin-bottom:20px;}
+.article-body li{margin-bottom:8px;}
+.article-body strong{font-weight:700;}
+.prompt-box{background:#F0F4FF;border:1px solid #C7D2FE;border-radius:var(--radius);padding:20px 24px;margin:20px 0;font-family:monospace;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word;}
+.prompt-label{font-size:12px;font-weight:700;color:#4F46E5;margin-bottom:8px;display:block;}
+.limit-list{list-style:none;padding:0;margin:20px 0;}
+.limit-item{display:flex;gap:12px;margin-bottom:16px;padding:16px;background:var(--bg-sub);border-radius:8px;align-items:flex-start;}
+.limit-icon{flex-shrink:0;font-size:20px;}
+.limit-body strong{display:block;font-size:15px;margin-bottom:4px;}
+.limit-body p{margin:0;font-size:14px;color:var(--muted);}
+.comp-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;}
+.comp-table th,.comp-table td{padding:12px 16px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+.comp-table th{background:var(--bg-sub);font-weight:700;}
+.comp-table .good{color:#16a34a;}
+.comp-table .bad{color:#dc2626;}
+.cta-section{background:var(--brand);color:#fff;border-radius:var(--radius);padding:40px 32px;text-align:center;margin:56px 0 40px;}
+.cta-section h2{font-size:clamp(18px,2.5vw,24px);font-weight:900;margin-bottom:12px;color:#fff;border:none;padding:0;}
+.cta-section p{font-size:15px;opacity:.85;margin-bottom:28px;}
+.btn-cta{display:inline-block;background:var(--action);color:#fff;font-size:16px;font-weight:900;padding:16px 32px;border-radius:8px;text-decoration:none;}
+.btn-cta:hover{opacity:.9;text-decoration:none;}
+.cta-note{font-size:13px;opacity:.7;margin-top:12px;}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0;}
+.faq-q{font-weight:700;font-size:16px;margin-bottom:10px;padding-left:28px;position:relative;}
+.faq-q::before{content:"Q";position:absolute;left:0;top:0;background:var(--brand);color:#fff;font-size:12px;font-weight:900;width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;line-height:20px;text-align:center;}
+.faq-a{font-size:15px;color:var(--muted);padding-left:28px;}
+.related-links{background:var(--bg-sub);border-radius:var(--radius);padding:24px;margin:40px 0;}
+.related-links h3{font-size:15px;font-weight:700;margin-bottom:14px;}
+.related-links ul{list-style:none;padding:0;}
+.related-links li{margin-bottom:8px;font-size:15px;}
+.related-links li::before{content:"→ ";color:var(--action);}
+.site-footer{background:var(--brand-dark);color:rgba(255,255,255,.5);padding:32px 24px;font-size:13px;text-align:center;}
+.site-footer a{color:rgba(255,255,255,.6);}
+@media(max-width:640px){.container{padding:0 16px;}.comp-table{font-size:13px;}.comp-table th,.comp-table td{padding:8px 10px;}.cta-section{padding:32px 20px;}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="site-logo">MEOポスト</a>
+  <a href="/#form-section" class="header-cta">無料デモを申し込む</a>
+</header>
+
+<main>
+<div class="container">
+<nav class="breadcrumb" aria-label="パンくずリスト">
+  <a href="/">MEOポスト</a><span>›</span>ChatGPTで飲食店のInstagram投稿文を作る方法と限界
+</nav>
+
+<article class="article-wrap">
+  <header class="article-header">
+    <span class="article-tag">ChatGPT活用</span>
+    <h1 class="article-h1">ChatGPTで飲食店のInstagram投稿文を<br>作る方法と限界【プロンプト例あり】</h1>
+    <p class="article-meta">公開日：2026年7月11日｜MEOポスト編集部</p>
+    <div class="article-lead">
+      ChatGPTを使って飲食店のInstagram投稿文を作ることは可能です。ただし「毎回のプロンプト作成」「店舗情報の再入力」「Googleマップ用への切り替え」など、使いこなすための手間も伴います。本記事では、実際に使えるプロンプト例と、ChatGPTの限界・飲食店特化ツールとの違いを整理します。
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol>
+      <li><a href="#prompt">ChatGPTで使えるプロンプト例</a></li>
+      <li><a href="#limits">ChatGPTの限界・よくある問題</a></li>
+      <li><a href="#comparison">ChatGPTとMEOポストの比較</a></li>
+      <li><a href="#when-chatgpt">ChatGPTが向いているケース</a></li>
+      <li><a href="#faq">よくある質問</a></li>
+    </ol>
+  </nav>
+
+  <div class="article-body">
+
+    <section id="prompt">
+      <h2>ChatGPTで飲食店のInstagram投稿文を作るプロンプト例</h2>
+      <p>以下は、ChatGPT（GPT-4o以降推奨）で使えるプロンプトのテンプレートです。毎回コピーして使えます。</p>
+
+      <h3>基本テンプレート</h3>
+      <div class="prompt-box"><span class="prompt-label">📋 プロンプト（コピーして使用）</span>あなたは飲食店のSNS担当者です。以下の情報をもとに、Instagramのフィード投稿用キャプションを作成してください。
+
+【店舗情報】
+- 店名：（例：石窯ピザ マルゲリータ）
+- 業態：（例：イタリアンレストラン）
+- 所在地：（例：福岡市中央区天神）
+- 営業時間：（例：11:00〜14:30 / 17:00〜21:00）
+
+【今回の投稿内容】
+- 料理名：（例：石窯マルゲリータ）
+- 特徴・こだわり：（例：もちもち生地を石窯で焼き上げ。生バジル使用）
+- その他メモ：（例：今週から新登場、ランチセットあり）
+
+【出力条件】
+- キャプション本文：200〜300文字
+- 冒頭125文字以内に料理名と魅力を入れる
+- 行動を促す締め（来店・予約・プロフリンク）で終わる
+- ハッシュタグ：大・中・小規模を混ぜて10個
+- 絵文字を適度に使用</div>
+
+      <h3>Googleマップ（ビジネスプロフィール）用プロンプト</h3>
+      <div class="prompt-box"><span class="prompt-label">📋 Googleマップ投稿用</span>Googleビジネスプロフィールへの投稿文を作成してください。
+Instagramと異なり、ハッシュタグは不要です。
+丁寧なですます調で150〜200文字にまとめてください。
+
+【店舗・料理情報は上記と同じ】</div>
+
+      <p>このプロンプトを使えば、それなりの投稿文が出力されます。ただし、<strong>毎回この指示文を入力・調整する必要がある</strong>点がデメリットです。</p>
+    </section>
+
+    <section id="limits">
+      <h2>ChatGPTで投稿文を作る際の限界・よくある問題</h2>
+      <ul class="limit-list">
+        <li class="limit-item">
+          <div class="limit-icon">⚠️</div>
+          <div class="limit-body">
+            <strong>毎回店舗情報を再入力する手間</strong>
+            <p>ChatGPTは会話ごとに記憶がリセットされます（カスタム指示機能で一部緩和可）。店名・業態・営業時間を毎回入力するか、テンプレを管理する必要があります。</p>
+          </div>
+        </li>
+        <li class="limit-item">
+          <div class="limit-icon">⚠️</div>
+          <div class="limit-body">
+            <strong>GoogleマップとInstagramを別々に作成する手間</strong>
+            <p>文体・文字数・ハッシュタグの有無が異なるため、プロンプトを2つ実行する必要があります。</p>
+          </div>
+        </li>
+        <li class="limit-item">
+          <div class="limit-icon">⚠️</div>
+          <div class="limit-body">
+            <strong>写真の内容を自動で読み取れない（GPT-4oは可能だが手順が煩雑）</strong>
+            <p>GPT-4oは画像を読み取れますが、「写真をアップロード→プロンプトを入力→出力を確認」という手順が必要で、スマートフォンからの操作は特に煩雑です。</p>
+          </div>
+        </li>
+        <li class="limit-item">
+          <div class="limit-icon">⚠️</div>
+          <div class="limit-body">
+            <strong>プロンプトの品質管理が必要</strong>
+            <p>プロンプトの書き方によって出力品質が大きく変わります。最初に適切なプロンプトを設計する知識とテスト時間が必要です。</p>
+          </div>
+        </li>
+        <li class="limit-item">
+          <div class="limit-icon">⚠️</div>
+          <div class="limit-body">
+            <strong>スタッフへの引き継ぎが難しい</strong>
+            <p>「ChatGPTの使い方」「プロンプトの入力方法」をスタッフに教える必要があり、オーナー以外が使いこなすのが難しいケースがあります。</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section id="comparison">
+      <h2>ChatGPTとMEOポストの比較</h2>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>比較項目</th>
+            <th>ChatGPT</th>
+            <th>MEOポスト</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>操作の手間</td>
+            <td class="bad">毎回プロンプトを入力</td>
+            <td class="good">写真を選ぶだけ</td>
+          </tr>
+          <tr>
+            <td>店舗情報の管理</td>
+            <td class="bad">毎回入力 or カスタム指示に登録</td>
+            <td class="good">一度登録で自動反映</td>
+          </tr>
+          <tr>
+            <td>2媒体同時生成</td>
+            <td class="bad">プロンプトを2回実行</td>
+            <td class="good">GoogleマップとInstagramを同時生成</td>
+          </tr>
+          <tr>
+            <td>写真からの自動認識</td>
+            <td>GPT-4oで可能（操作が煩雑）</td>
+            <td class="good">スマートフォンから1タップ</td>
+          </tr>
+          <tr>
+            <td>飲食店向け最適化</td>
+            <td>汎用（自分でプロンプト設計が必要）</td>
+            <td class="good">飲食店の投稿に特化済み</td>
+          </tr>
+          <tr>
+            <td>スタッフへの移譲</td>
+            <td class="bad">ChatGPT操作を教える必要あり</td>
+            <td class="good">シンプルな操作で誰でも使える</td>
+          </tr>
+          <tr>
+            <td>月額費用</td>
+            <td>無料〜$20（約3,000円）</td>
+            <td>2,980円〜</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="when-chatgpt">
+      <h2>ChatGPTが向いているケース</h2>
+      <p>以下のケースでは、ChatGPTを使う方が柔軟性が高い場合があります。</p>
+      <ul>
+        <li>月に数回しか投稿しない</li>
+        <li>AIツールのプロンプト設計が好きで、カスタマイズを楽しみたい</li>
+        <li>投稿文以外（メニュー説明・メール文章など）もまとめてAIに任せたい</li>
+        <li>コストを極力ゼロに抑えたい（ChatGPT無料プランを活用）</li>
+      </ul>
+      <p>一方、<strong>毎日または週数回の投稿を継続させたい・スタッフに運用を任せたい・GoogleマップとInstagramを同時管理したい</strong>という場合は、MEOポストのような飲食店特化ツールの方が長続きします。</p>
+    </section>
+
+    <section id="faq">
+      <h2>よくある質問</h2>
+      <div class="faq-item">
+        <p class="faq-q">ChatGPTで生成したInstagram投稿文はバンされますか？</p>
+        <p class="faq-a">AI生成テキスト自体はInstagramのポリシーに違反しません。ただし、スパム的なハッシュタグの大量使用や、他アカウントの投稿をコピーしたような内容はポリシー違反になる可能性があります。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">ChatGPTに毎回同じ店舗情報を入力しなくて済む方法はありますか？</p>
+        <p class="faq-a">ChatGPTのカスタム指示機能（My instructions）に店舗情報を登録しておくと、毎回入力する手間を省けます。ただし、プロンプトの設計・管理が必要で、Googleマップ用とInstagram用を切り替える手間は残ります。MEOポストでは店舗情報を一度登録するだけで両媒体の投稿文を同時生成できます。</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="cta-section">
+    <h2>ChatGPTよりシンプルに、飲食店向けAI投稿文を試してみませんか？</h2>
+    <p>写真を選んで一言添えるだけで、GoogleマップとInstagramの投稿文が同時に生成されます。</p>
+    <a href="/#form-section" class="btn-cta">無料デモを申し込む</a>
+    <p class="cta-note">2営業日以内にご連絡します</p>
+  </div>
+
+  <div class="related-links">
+    <h3>関連ページ</h3>
+    <ul>
+      <li><a href="/">MEOポスト トップページ</a></li>
+      <li><a href="/google-business-profile-post-ai/">Googleビジネスプロフィールの投稿文をAIで作成する方法</a></li>
+      <li><a href="/restaurant-instagram-post-ai/">飲食店のInstagram投稿文をAIで作成する方法</a></li>
+      <li><a href="/restaurant-sns-automation/">飲食店のSNS投稿を半自動化する方法</a></li>
+    </ul>
+  </div>
+
+</article>
+</div>
+</main>
+
+<footer class="site-footer">
+  <p>© 2026 MEOポスト｜株式会社LAM COMPANY｜<a href="/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+</body>
+</html>
