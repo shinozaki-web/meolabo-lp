@@ -10,10 +10,30 @@ const transporter = nodemailer.createTransport({
 });
 
 const STAFF_EMAIL = process.env.STAFF_EMAIL || process.env.GMAIL_USER;
+const MAX_BODY_BYTES = 12 * 1024 * 1024;
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT = 5;
+const requestLog = new Map();
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
+
+  const contentLength = Number(req.headers['content-length'] || 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return res.status(413).json({ error: 'payload_too_large', message: '送信データが大きすぎます。' });
+  }
+
+  const clientIp = getClientIp(req);
+  if (!allowRequest(clientIp)) {
+    res.setHeader('Retry-After', String(Math.ceil(RATE_WINDOW_MS / 1000)));
+    return res.status(429).json({ error: 'rate_limited', message: '送信回数が多すぎます。時間をおいて再度お試しください。' });
+  }
+
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD || !STAFF_EMAIL) {
+    console.error('Mail configuration is incomplete.');
+    return res.status(503).json({ error: 'service_unavailable', message: '現在送信を受け付けられません。' });
+  }
 
   let fields, photoFile;
   try {
@@ -32,6 +52,9 @@ module.exports = async function handler(req, res) {
 
   if (!email || !name || !storeName) {
     return res.status(422).json({ error: 'validation', message: '必須項目が不足しています。' });
+  }
+  if (!isValidEmail(email) || !isWithin(name, 1, 80) || !isWithin(storeName, 1, 120)) {
+    return res.status(422).json({ error: 'validation', message: '入力内容を確認してください。' });
   }
 
   // Validate photo via magic bytes — reject if not a real image
@@ -80,9 +103,19 @@ module.exports = async function handler(req, res) {
 
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {
-    const bb = Busboy({ headers: req.headers, limits: { fileSize: 10 * 1024 * 1024 } });
+    const bb = Busboy({
+      headers: req.headers,
+      limits: {
+        fileSize: 10 * 1024 * 1024,
+        files: 1,
+        fields: 30,
+        fieldSize: 20 * 1024,
+        parts: 31,
+      },
+    });
     const fields = {};
     let photoFile = null;
+    let limitExceeded = false;
 
     bb.on('field', (name, val) => {
       if (name in fields) {
@@ -95,6 +128,7 @@ function parseMultipart(req) {
     bb.on('file', (name, stream, info) => {
       if (name !== 'food_photo') { stream.resume(); return; }
       const chunks = [];
+      stream.on('limit', () => { limitExceeded = true; });
       stream.on('data', d => chunks.push(d));
       stream.on('end', () => {
         if (chunks.length > 0) {
@@ -103,7 +137,13 @@ function parseMultipart(req) {
       });
     });
 
-    bb.on('close', () => resolve({ fields, photoFile }));
+    bb.on('filesLimit', () => { limitExceeded = true; });
+    bb.on('fieldsLimit', () => { limitExceeded = true; });
+    bb.on('partsLimit', () => { limitExceeded = true; });
+    bb.on('close', () => {
+      if (limitExceeded) return reject(new Error('Multipart limit exceeded'));
+      return resolve({ fields, photoFile });
+    });
     bb.on('error', reject);
     req.pipe(bb);
   });
@@ -132,6 +172,39 @@ function esc(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
+}
+
+function isValidEmail(value) {
+  const email = String(value || '').trim();
+  return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isWithin(value, min, max) {
+  const length = String(value || '').trim().length;
+  return length >= min && length <= max;
+}
+
+function getClientIp(req) {
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwarded || req.socket?.remoteAddress || 'unknown';
+}
+
+function allowRequest(ip) {
+  const now = Date.now();
+  const recent = (requestLog.get(ip) || []).filter(timestamp => now - timestamp < RATE_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT) {
+    requestLog.set(ip, recent);
+    return false;
+  }
+  recent.push(now);
+  requestLog.set(ip, recent);
+
+  if (requestLog.size > 1000) {
+    for (const [key, timestamps] of requestLog.entries()) {
+      if (!timestamps.some(timestamp => now - timestamp < RATE_WINDOW_MS)) requestLog.delete(key);
+    }
+  }
+  return true;
 }
 
 function buildStaffEmail({ fields, concerns, hasPhoto }) {
@@ -163,6 +236,6 @@ function buildCustomerEmail({ name, storeName }) {
 <p>「<strong>${esc(storeName)}</strong>」の料理写真を使ったデモを準備しています。<br>
 <strong>2営業日以内</strong>に、実際に生成された投稿文サンプルをこのメールへの返信でお送りします。</p>
 <p>ご質問はこのメールへの返信でお気軽にどうぞ。</p>
-<p style="margin-top:40px;padding-top:16px;border-top:1px solid #eee;color:#888;font-size:13px;">— MEOポスト（株式会社meolabo）</p>
+<p style="margin-top:40px;padding-top:16px;border-top:1px solid #eee;color:#888;font-size:13px;">— MEOポスト（株式会社 LAM COMPANY）</p>
 </body></html>`;
 }
