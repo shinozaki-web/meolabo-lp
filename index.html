@@ -156,11 +156,9 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
 .app-bar strong{color:var(--brand);font-size:14px}
 .app-bar span{color:var(--muted);font-size:11px}
 .mock-grid{display:grid;grid-template-columns:138px 1fr;gap:14px}
-.dish-photo{display:flex;min-height:210px;align-items:flex-end;border-radius:16px;padding:14px;color:#fff;background:
-  radial-gradient(circle at 48% 42%,#f6d073 0 15%,#d74d2c 16% 23%,#f7e5a7 24% 32%,transparent 33%),
-  radial-gradient(circle at 52% 48%,#d9efe0 0 6%,transparent 7%),
-  linear-gradient(145deg,#7f3b24,#e28a46 50%,#f4c36d);
-  font-size:12px;font-weight:800;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.dish-photo{position:relative;min-height:210px;overflow:hidden;border-radius:16px;background:#7f3b24;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.dish-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:44% center}
+.dish-photo span{position:absolute;right:0;bottom:0;left:0;padding:30px 14px 12px;color:#fff;background:linear-gradient(transparent,rgba(7,29,24,.82));font-size:12px;font-weight:800}
 .output-card{border:1px solid var(--line);border-radius:16px;padding:15px;background:#fbfcfb}
 .output-tabs{display:flex;gap:6px;margin-bottom:12px}
 .output-tabs span{border-radius:999px;padding:5px 8px;background:#edf2ef;color:var(--muted);font-size:10px;font-weight:800}
@@ -274,7 +272,8 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
   .hero-actions{align-items:flex-start;flex-direction:column}
   .hero-actions .button{width:100%}
   .mock-grid{grid-template-columns:105px 1fr;gap:10px}
-  .dish-photo{min-height:190px;padding:10px;font-size:10px}
+  .dish-photo{min-height:190px}
+  .dish-photo span{padding:28px 10px 10px;font-size:10px}
   .output-card{padding:12px}
   .floating-proof{right:-8px;bottom:-34px;width:170px}
   .fit-card,.step{padding:22px 20px}
@@ -338,10 +337,13 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
         </ul>
       </div>
 
-      <div class="app-mock" role="img" aria-label="MEOポストの生成イメージ">
+      <div class="app-mock" role="group" aria-label="MEOポストの生成イメージ">
         <div class="app-bar"><strong>MEOポスト</strong><span>生成イメージ</span></div>
         <div class="mock-grid">
-          <div class="dish-photo">石窯マルゲリータ</div>
+          <div class="dish-photo">
+            <img src="margherita-bongo.jpg" width="900" height="600" alt="BONGOの石窯で焼いているマルゲリータ">
+            <span>石窯マルゲリータ</span>
+          </div>
           <div class="output-card">
             <div class="output-tabs"><span>Googleマップ</span><span>Instagram</span></div>
             <h3>本日のおすすめ</h3>
