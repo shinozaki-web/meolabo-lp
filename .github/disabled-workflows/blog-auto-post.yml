@@ -1,4 +1,4 @@
-name: Blog Auto Post
+name: Blog Auto Post (Disabled)
 
 on:
   # Automatic posting is paused. Run this workflow manually when needed.
