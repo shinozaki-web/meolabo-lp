@@ -1,9 +1,7 @@
 name: Blog Auto Post
 
 on:
-  schedule:
-    # Mondays at 10:00 JST (01:00 UTC)
-    - cron: '0 1 * * 1'
+  # Automatic posting is paused. Run this workflow manually when needed.
   workflow_dispatch:
 
 jobs:
