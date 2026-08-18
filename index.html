@@ -294,8 +294,8 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
   .footer-grid{flex-direction:column}
   .footer-links{justify-content:flex-start}
   .screens-grid{gap:28px}
-  .screen-frame{width:240px;height:390px}
-  .screen-frame img{width:684px;margin-left:-222px}
+  .screen-frame{width:220px;height:440px}
+  .screen-frame img{width:100%;max-width:100%;margin-left:0}
   .screen-card figcaption{font-size:13px}
   .screen-card figcaption strong{font-size:14px}
   .mobile-cta{position:fixed;right:12px;bottom:12px;left:12px;z-index:45;display:block;visibility:hidden;pointer-events:none;transform:translateY(130%);transition:transform .25s,visibility .25s}
@@ -307,10 +307,10 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
-.screens-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;justify-items:center}
+.screens-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:40px;justify-items:center}
 .screen-card{margin:0;text-align:center}
-.screen-frame{width:280px;height:460px;overflow:hidden;border-radius:18px;box-shadow:0 24px 60px rgba(13,45,38,.2);border:1.5px solid var(--line);background:#f0f0ef}
-.screen-frame img{width:737px;max-width:none;margin-left:-239px;height:auto;display:block}
+.screen-frame{width:280px;height:500px;overflow:hidden;border-radius:18px;box-shadow:0 24px 60px rgba(13,45,38,.2);border:1.5px solid var(--line);background:#f0f0ef}
+.screen-frame img{width:100%;max-width:100%;height:auto;display:block}
 .screen-card figcaption{margin-top:18px;font-size:15px;color:var(--muted);line-height:1.6}
 .screen-card figcaption strong{display:block;margin-bottom:4px;color:var(--ink);font-size:16px}
 @media(max-width:900px){.screens-grid{grid-template-columns:1fr;gap:36px}}
@@ -439,20 +439,16 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
       <div class="section-head">
         <p class="eyebrow">App Preview</p>
         <h2>スマートフォンで、直感的に使えます。</h2>
-        <p>ログインして、写真を選んで、ボタンを押すだけ。設定は最初に一度だけ。</p>
+        <p>写真を選んで、一言メモを入力するだけ。30秒でInstagramキャプションが完成します。</p>
       </div>
       <div class="screens-grid">
         <figure class="screen-card">
-          <div class="screen-frame"><img src="screenshots/app-dashboard.jpg" alt="MEOポストのダッシュボード画面。今月の残り生成回数と最近の生成履歴を表示。" loading="lazy"></div>
-          <figcaption><strong>ダッシュボード</strong><br>残り生成回数・最近の投稿文をひと目で確認できます。</figcaption>
+          <div class="screen-frame"><img src="screenshots/app-create-new.png" alt="MEOポストの投稿作成画面。料理写真を選び、ひとことメモを入力してAIで生成するボタンを押す。" loading="lazy"></div>
+          <figcaption><strong>写真を選んで、一言添えるだけ</strong><br>料理写真をタップして選び、今日のひとことを入力。あとはAIにおまかせです。</figcaption>
         </figure>
         <figure class="screen-card">
-          <div class="screen-frame"><img src="screenshots/app-create.jpg" alt="MEOポストの投稿作成画面。写真を選び、今日のひとことを入力してAI生成するボタンを押す。" loading="lazy"></div>
-          <figcaption><strong>投稿作成</strong><br>写真を選び、一言メモを添えてAIに生成を依頼します。</figcaption>
-        </figure>
-        <figure class="screen-card">
-          <div class="screen-frame"><img src="screenshots/app-history.jpg" alt="MEOポストの投稿履歴画面。過去に生成した投稿文がサムネイル付きで一覧表示される。" loading="lazy"></div>
-          <figcaption><strong>生成履歴</strong><br>過去の投稿文をいつでも確認・再利用できます。</figcaption>
+          <div class="screen-frame"><img src="screenshots/app-result-new.png" alt="MEOポストの生成結果画面。AIが作成したInstagramキャプションが表示され、直接投稿できる。" loading="lazy"></div>
+          <figcaption><strong>キャプション生成 → そのまま投稿</strong><br>AIが作成した文章をコピーするか、ボタン1つでInstagramに直接投稿できます。</figcaption>
         </figure>
       </div>
     </div>
