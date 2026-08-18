@@ -259,7 +259,8 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
 }
 @media(max-width:640px){
   .wrap,.narrow{width:min(calc(100% - 32px),var(--max))}
-  .section{padding:72px 0}
+  .section{padding:60px 0}
+  .section-head{margin-bottom:28px}
   .header-inner{min-height:62px}
   .brand span{display:none}
   .nav .button{display:none}
@@ -268,26 +269,35 @@ h3{margin-bottom:10px;color:var(--brand-dark);font-size:21px;line-height:1.45}
   .nav.open{display:grid}
   .nav a:not(.button){display:block;padding:10px 4px;font-size:16px}
   .nav .button{display:flex}
-  .hero{padding:52px 0 72px;background:linear-gradient(180deg,#fff 0 56%,var(--cream) 56%)}
-  .hero-grid{gap:42px}
+  h3{font-size:18px}
+  .hero{padding:44px 0 60px;background:linear-gradient(180deg,#fff 0 56%,var(--cream) 56%)}
+  .hero-grid{gap:36px}
   .hero-label{font-size:12px}
   .hero-actions{align-items:flex-start;flex-direction:column}
   .hero-actions .button{width:100%}
-  .mock-grid{grid-template-columns:105px 1fr;gap:10px}
-  .dish-photo{min-height:190px}
+  .mock-grid{grid-template-columns:100px 1fr;gap:10px}
+  .dish-photo{min-height:170px}
   .dish-photo span{padding:28px 10px 10px;font-size:10px}
   .output-card{padding:12px}
-  .floating-proof{right:-8px;bottom:-34px;width:170px}
-  .fit-card,.step{padding:22px 20px}
-  .proof-grid{gap:30px}
-  .metric{gap:12px}
-  .price-highlight{padding:28px 22px}
-  .plan{grid-template-columns:1fr;gap:12px}
+  .floating-proof{right:0;bottom:-28px;width:160px;padding:10px 12px}
+  .floating-proof b{font-size:20px}
+  .fit-card,.step{padding:20px 18px}
+  .proof-grid{gap:28px}
+  .metric{gap:10px}
+  .metric-number{font-size:32px}
+  .price-highlight{padding:24px 20px}
+  .plan{grid-template-columns:1fr auto;gap:8px 16px}
   .plan-price{font-size:22px}
+  .plan-steps,.plan-benefit,.plan-features{grid-column:1 / -1}
   .final-grid{grid-template-columns:1fr}
   .final-action .button{width:100%;min-width:0}
   .footer-grid{flex-direction:column}
   .footer-links{justify-content:flex-start}
+  .screens-grid{gap:28px}
+  .screen-frame{width:240px;height:390px}
+  .screen-frame img{width:684px;margin-left:-222px}
+  .screen-card figcaption{font-size:13px}
+  .screen-card figcaption strong{font-size:14px}
   .mobile-cta{position:fixed;right:12px;bottom:12px;left:12px;z-index:45;display:block;visibility:hidden;pointer-events:none;transform:translateY(130%);transition:transform .25s,visibility .25s}
   .mobile-cta.visible{visibility:visible;pointer-events:auto;transform:none}
   .mobile-cta .button{width:100%;min-height:54px;box-shadow:0 12px 30px rgba(13,45,38,.28)}
